@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAIChat } from '@/hooks/useAIChat';
 
 const heroPersonas = [
   { id: 'goku', name: 'Saiyan Strength', icon: '🐉', color: '#ff9900', prompt: "Yo! I'm Goku. We're training to surpass our limits today. Let's hit 100x gravity!", style: 'High Volume / Explosive' },
@@ -13,19 +14,57 @@ const heroPersonas = [
 export const HeroWorkout = () => {
   const [selectedHero, setSelectedHero] = useState<typeof heroPersonas[0] | null>(null);
   const [chatLog, setChatLog] = useState<Array<{ sender: string; text: string }>>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const { streamChat, isStreaming } = useAIChat();
 
   const handleHeroSelect = (hero: typeof heroPersonas[0]) => {
     setSelectedHero(hero);
     setChatLog([{ sender: 'ai', text: hero.prompt }]);
   };
 
-  const sendMessage = () => {
-    // Placeholder for AI response
-    setChatLog([
-      ...chatLog,
-      { sender: 'user', text: 'I want to build strength' },
-      { sender: 'ai', text: "Good. Let's start with compound lifts. Warm up first, then we're hitting heavy sets." },
-    ]);
+  const sendMessage = async () => {
+    if (!inputMessage.trim() || isStreaming) return;
+
+    const userMessage = inputMessage.trim();
+    setInputMessage('');
+
+    // Add user message to chat
+    const newUserMessage = { sender: 'user', text: userMessage };
+    setChatLog(prev => [...prev, newUserMessage]);
+
+    // Create messages for AI
+    const messages = [
+      ...chatLog.map(msg => ({
+        role: (msg.sender === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+        content: msg.text,
+      })),
+      { role: 'user' as const, content: userMessage },
+    ];
+
+    // Stream AI response
+    let assistantMessage = '';
+    const updateAssistant = (chunk: string) => {
+      assistantMessage += chunk;
+      setChatLog(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.sender === 'ai') {
+          return prev.map((m, i) =>
+            i === prev.length - 1 ? { ...m, text: assistantMessage } : m
+          );
+        }
+        return [...prev, { sender: 'ai', text: assistantMessage }];
+      });
+    };
+
+    try {
+      await streamChat({
+        messages,
+        onDelta: updateAssistant,
+        onDone: () => {},
+      });
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
   return (
@@ -69,7 +108,10 @@ export const HeroWorkout = () => {
               </div>
             </div>
             <Button
-              onClick={() => setSelectedHero(null)}
+              onClick={() => {
+                setSelectedHero(null);
+                setChatLog([]);
+              }}
               variant="destructive"
               className="font-black underline hover:scale-105 text-xl border-4 border-border"
             >
@@ -83,7 +125,9 @@ export const HeroWorkout = () => {
               <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-slideUp`}>
                 <div
                   className={`max-w-[80%] p-6 font-black text-xl border-4 border-border ${
-                    msg.sender === 'user' ? 'bg-accent text-accent-foreground transform rotate-1' : 'bg-secondary text-secondary-foreground transform -rotate-1'
+                    msg.sender === 'user'
+                      ? 'bg-accent text-accent-foreground transform rotate-1'
+                      : 'bg-secondary text-secondary-foreground transform -rotate-1'
                   }`}
                   style={{ boxShadow: '6px 6px 0 0 rgba(0,0,0,0.2)' }}
                 >
@@ -98,12 +142,17 @@ export const HeroWorkout = () => {
             <Input
               placeholder="Type your response..."
               className="flex-1 p-6 border-4 border-border font-black text-xl bg-card"
+              value={inputMessage}
+              onChange={e => setInputMessage(e.target.value)}
+              onKeyPress={e => e.key === 'Enter' && sendMessage()}
+              disabled={isStreaming}
             />
             <Button
               onClick={sendMessage}
+              disabled={isStreaming || !inputMessage.trim()}
               className="px-8 font-black bg-accent text-accent-foreground uppercase text-xl hover:scale-105 transition-transform border-4 border-border"
             >
-              <Send className="w-6 h-6" />
+              {isStreaming ? <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send className="w-6 h-6" />}
             </Button>
           </div>
         </div>

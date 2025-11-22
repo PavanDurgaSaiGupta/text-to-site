@@ -3,13 +3,28 @@ import { Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AISkeletonDemo } from '@/components/features/AISkeletonDemo';
+import { useAuth } from '@/hooks/useAuth';
 
-interface AuthPageProps {
-  onLogin: () => void;
-}
-
-export const AuthPage = ({ onLogin }: AuthPageProps) => {
+export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { signIn, signUp } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (isLogin) {
+      await signIn(email, password);
+    } else {
+      await signUp(email, password, fullName);
+    }
+
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
@@ -29,29 +44,48 @@ export const AuthPage = ({ onLogin }: AuthPageProps) => {
             </p>
           </div>
 
-          <div className="space-y-4 animate-slideUp delay-300">
+          <form onSubmit={handleSubmit} className="space-y-4 animate-slideUp delay-300">
+            {!isLogin && (
+              <Input
+                type="text"
+                placeholder="Full Name"
+                className="w-full p-4 bg-input border-4 border-border font-bold"
+                value={fullName}
+                onChange={e => setFullName(e.target.value)}
+                required
+              />
+            )}
             <Input
               type="email"
               placeholder="Email Address"
               className="w-full p-4 bg-input border-4 border-border font-bold"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
             />
             <Input
               type="password"
               placeholder="Password"
               className="w-full p-4 bg-input border-4 border-border font-bold"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              minLength={6}
             />
             <Button
-              onClick={onLogin}
+              type="submit"
+              disabled={isLoading}
               className="w-full py-6 bg-accent text-accent-foreground font-black text-xl uppercase tracking-widest hover:scale-[1.02] transition-all shadow-brutal border-4 border-border"
             >
-              {isLogin ? 'Log In' : 'Sign Up'}
+              {isLoading ? 'Processing...' : isLogin ? 'Log In' : 'Sign Up'}
             </Button>
-          </div>
+          </form>
 
           <div className="mt-6 text-center animate-slideUp delay-400">
             <button
               onClick={() => setIsLogin(!isLogin)}
               className="font-black underline text-lg hover:text-accent transition-colors"
+              type="button"
             >
               {isLogin ? 'Create Account ->' : '<- Back to Login'}
             </button>

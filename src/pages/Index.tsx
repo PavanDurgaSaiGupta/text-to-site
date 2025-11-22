@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import { Navigation } from '@/components/navigation/Navigation';
@@ -8,14 +9,25 @@ import { DietPlanner } from './DietPlanner';
 import { Camera, Swords, Code } from 'lucide-react';
 
 const Index = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, loading, signOut } = useAuth();
   const [hasOnboarded, setHasOnboarded] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-xl font-bold">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Auth Check
-  if (!isAuthenticated) {
-    return <AuthPage onLogin={() => setIsAuthenticated(true)} />;
+  if (!user) {
+    return <AuthPage />;
   }
 
   // Onboarding Check
@@ -33,7 +45,7 @@ const Index = () => {
         setActiveTab={setActiveTab}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
-        onLogout={() => setIsAuthenticated(false)}
+        onLogout={signOut}
       />
 
       <main className="relative z-10 pt-36 px-4 sm:px-6 lg:px-8 flex flex-col items-center min-h-[80vh] pb-20">

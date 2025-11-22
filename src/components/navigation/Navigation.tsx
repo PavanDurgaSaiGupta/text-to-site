@@ -1,5 +1,6 @@
 import { Activity, Camera, Zap, Swords, Utensils, Code, Menu, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTheme } from '@/hooks/useTheme';
 
 interface NavigationProps {
   activeTab: string;
@@ -10,6 +11,8 @@ interface NavigationProps {
 }
 
 export const Navigation = ({ activeTab, setActiveTab, mobileMenuOpen, setMobileMenuOpen, onLogout }: NavigationProps) => {
+  const { toggleTheme, theme } = useTheme();
+  
   const navItems = [
     { id: 'dashboard', label: 'Home', icon: Activity },
     { id: 'coach', label: 'Coach', icon: Camera },
@@ -54,10 +57,11 @@ export const Navigation = ({ activeTab, setActiveTab, mobileMenuOpen, setMobileM
           {/* Actions */}
           <div className="flex items-center gap-4">
             <Button
+              onClick={toggleTheme}
               variant="outline"
               size="icon"
               className="border-4 border-border hover:bg-muted"
-              title="Switch Theme"
+              title={`Switch Theme (Current: ${theme.name})`}
             >
               <Palette className="w-6 h-6" />
             </Button>
