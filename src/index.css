@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Retro Paper Theme - Bold & Brutalist */
+    --background: 37 25% 94%;
+    --foreground: 0 0% 0%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 45 100% 50%;
+    --secondary-foreground: 0 0% 0%;
+
+    --accent: 0 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 40%;
+
+    --border: 0 0% 0%;
+    --input: 0 0% 90%;
+    --ring: 0 100% 50%;
+
+    --radius: 0px;
+
+    /* Grid pattern */
+    --grid-color: 0 0% 0% / 0.15;
+
+    /* Shadows */
+    --shadow-brutal: 8px 8px 0px 0px rgb(0 0 0);
+    --shadow-hover: 12px 12px 0px 0px rgb(0 0 0);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Courier New', monospace;
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  * {
+    transition: background-color 0.5s ease, border-color 0.5s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Impact', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+
+  /* Animations */
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes popIn {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+
+    80% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes jiggle {
+
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    25% {
+      transform: rotate(-2deg);
+    }
+
+    50% {
+      transform: rotate(2deg);
+    }
+
+    75% {
+      transform: rotate(-1deg);
+    }
+  }
+
+  @keyframes floatSlow {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-popIn {
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  .animate-jiggle {
+    animation: jiggle 0.4s ease-in-out;
+  }
+
+  .animate-float {
+    animation: floatSlow 3s ease-in-out infinite;
+  }
+
+  .delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+
+  /* Brutal Shadow */
+  .shadow-brutal {
+    box-shadow: var(--shadow-brutal);
+  }
+
+  .shadow-brutal-hover:hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Grid background */
+  .bg-grid {
+    background-image:
+      linear-gradient(hsl(var(--grid-color)) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--grid-color)) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
