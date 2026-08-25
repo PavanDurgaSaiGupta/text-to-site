@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Brutalist Outer Border & Background -->
+  <rect x="6" y="6" width="116" height="116" rx="24" fill="#09090b" stroke="#3b82f6" stroke-width="8" />
+  
+  <!-- Accent Inner Square -->
+  <rect x="18" y="18" width="92" height="92" rx="16" fill="#facc15" />
+  
+  <!-- Bold Brutalist 'F' with Lightning Accent -->
+  <g fill="#09090b">
+    <!-- Letter F -->
+    <path d="M38 34 h52 v16 H56 v12 h28 v16 H56 v26 H38 Z" />
+    
+    <!-- Lightning Flash Accent -->
+    <polygon points="76,64 96,64 84,88 94,88 72,112 78,82 68,82" fill="#ef4444" stroke="#09090b" stroke-width="3" />
+  </g>
+</svg>
